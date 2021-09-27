@@ -59,9 +59,12 @@
 #define False 0
 #define True 1
 
-#if 0
-/* wgl extensions */
-PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = 0;
+#define ENABLE_VSYNC 1
+#if ENABLE_VSYNC
+
+typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC)(int interval);
+PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = NULL;
+
 #endif
 
 /* Global vars */
@@ -481,12 +484,11 @@ main(int argc, char *argv[])
 	make_window("glxgears", 0, 0, 300, 300);
 	reshape(300, 300);
 
-/* force vsync off */
-#if 0
-	wglSwapIntervalEXT = wglGetProcAddress("wglSwapIntervalEXT");
+#if ENABLE_VSYNC
+	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
 	if (!wglSwapIntervalEXT) {
 		printf("warning: wglSwapIntervalEXT missing, cannot force vsync off\n");
-	} else if (!wglSwapIntervalEXT(0)) {
+	} else if (!wglSwapIntervalEXT(1)) {
 		printf("warning: failed to force vsync off, it may still be on\n");
 	}
 #endif
